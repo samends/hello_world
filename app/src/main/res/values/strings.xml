@@ -2,7 +2,7 @@
 <resources>
 
     <string name="app_name">Hello_World</string>
-    <string name="hello_world">Hello world!</string>
+    <string name="textview">Hello world!</string>
     <string name="action_settings">Settings</string>
 
 </resources>
