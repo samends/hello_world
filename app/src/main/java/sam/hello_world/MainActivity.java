@@ -4,18 +4,37 @@ import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.view.Menu;
 import android.view.MenuItem;
+import android.view.View;
+import android.widget.Button;
+import android.widget.EditText;
 import android.widget.TextView;
 
 
-public class MainActivity extends ActionBarActivity {
+public class MainActivity extends ActionBarActivity implements View.OnClickListener {
+
+
+     TextView mainTextView;
+     EditText mainEditText;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
-        TextView mainTextView;
+        Button mainButton;
+
+        //text view
         mainTextView=(TextView)findViewById(R.id.main_textview);
-        mainTextView.setText("I set the id in Java!");
+        mainTextView.setText("Name");
+
+        //button view
+        mainButton=(Button)findViewById(R.id.main_button);
+        mainButton.setOnClickListener(this);
+
+        //Edit text view
+        mainEditText = (EditText)findViewById(R.id.main_edittext);
+
+
+
     }
 
 
@@ -39,5 +58,12 @@ public class MainActivity extends ActionBarActivity {
         }
 
         return super.onOptionsItemSelected(item);
+    }
+
+    @Override
+    public void onClick(View v) {
+       v.setRotation(90);
+       mainTextView.setText("Button pressed!");
+       mainTextView.setText(mainEditText.getText().toString()+"is learning android development");
     }
 }
