@@ -1,6 +1,10 @@
 package sam.hello_world;
 
+import android.app.AlertDialog;
+import android.app.Dialog;
+import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.support.v7.app.ActionBarActivity;
 import android.os.Bundle;
 import android.util.Log;
@@ -14,6 +18,7 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.ShareActionProvider;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import java.util.ArrayList;
 
@@ -26,7 +31,10 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
      ListView mainListView;
      ArrayAdapter mArrayAdapter;
      ArrayList mNameList;
-    ShareActionProvider mShareActionProvider;
+     ShareActionProvider mShareActionProvider;
+     private static final String PREFS = "prefs";
+     private static final String PREF_NAME = "name";
+    SharedPreferences mSharedPreferences;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -52,32 +60,59 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
         mainListView.setAdapter(mArrayAdapter);
         mainListView.setOnItemClickListener(this);
 
+        //Display Welcome Message
+        displayWelcome();
 
 
+    }
+
+    public void displayWelcome(){
+        mSharedPreferences = getSharedPreferences(PREFS, MODE_PRIVATE);
+        String name = mSharedPreferences.getString(PREF_NAME, "");
+
+        if(name.length()>0){
+            Toast.makeText(this, "Welcome back,"+name+"!",Toast.LENGTH_LONG).show();
+        }
+        else{
+            AlertDialog.Builder alert = new AlertDialog.Builder(this);
+            alert.setTitle("Welcome");
+            alert.setMessage("What is your name?");
+
+            final EditText input = new EditText(this);
+            alert.setView(input);
+
+            alert.setPositiveButton("OK", new DialogInterface.OnClickListener(){
+                public void onClick(DialogInterface dialog, int whichButton){
+                    String inputName=input.getText().toString();
+                    SharedPreferences.Editor e = mSharedPreferences.edit();
+                    e.putString(PREF_NAME, inputName);
+                    e.commit();
+
+                    Toast.makeText(getApplicationContext(),"Welcome,"+inputName,Toast.LENGTH_LONG).show();
+                }
+            });
+
+            alert.setNegativeButton("Cancel",new DialogInterface.OnClickListener(){
+                public void onClick(DialogInterface dialog, int whichButton){
+                    //Nothing happens on negative button
+                }
+            });
+
+            alert.show();
+        }
     }
 
 
     @Override
     public boolean onCreateOptionsMenu(Menu menu) {
-        // Inflate the menu; this adds items to the action bar if it is present.
-        getMenuInflater().inflate(R.menu.menu_main, menu);
-        MenuItem shareItem = menu.findItem(R.id.menu_item_share);
-        if (shareItem != null) {
-            mShareActionProvider = (ShareActionProvider)shareItem.getActionProvider();
-        }
-        setShareIntent();
+        // Inflate the menu.
+        // Adds items to the action bar if it is present.
+        getMenuInflater().inflate(R.menu.main, menu);
+
         return true;
     }
 
-    private void setShareIntent(){
-        if(mShareActionProvider !=mull){
-            Intent shareIntent = new Intent(Intent.ACTION_SEND);
-            shareIntent.setType("text/plain");
-            shareIntent.putExtra(Intent.EXTRA_SUBJECT,"Android Development");
-            shareIntent.putExtra(Intent.EXTRA_TEXT,mainTextView.getText());
-            mShareActionProvider.setShareIntent(shareIntent);
-        }
-    }
+
 
     @Override
     public boolean onOptionsItemSelected(MenuItem item) {
@@ -87,7 +122,7 @@ public class MainActivity extends ActionBarActivity implements View.OnClickListe
         int id = item.getItemId();
 
         //noinspection SimplifiableIfStatement
-        if (id == R.id.action_settings) {
+        if (id == R.id.menu_item_share) {
             return true;
         }
 
